@@ -31,3 +31,6 @@ npm-debug.log*
 # Runtime
 .cache/
 /src/generated/prisma
+
+# Prisma
+/prisma/migrations

@@ -2,19 +2,14 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import { createAuthRouter } from './routes/auth';
+import prisma from './config/database';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 // Middleware
 app.use(helmet());
@@ -30,11 +25,17 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Routes
-app.use('/api/auth', createAuthRouter(pool));
+app.use('/api/auth', createAuthRouter());
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
 });
 
 // Start server

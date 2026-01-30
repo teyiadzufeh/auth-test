@@ -1,13 +1,12 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth';
-import { Pool } from 'pg';
 import { UserModel } from '../models/User';
 import { validateLogin, validateRegister } from '../middleware/validation';
 
-export const createAuthRouter = (pool: Pool): Router => {
+export const createAuthRouter = (): Router => {
   const router = Router();
-  const userModel = new UserModel(pool);
+  const userModel = new UserModel();
   const authController = new AuthController(userModel);
 
   router.post('/register', validateRegister, authController.register);
